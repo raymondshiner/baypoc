@@ -3,6 +3,19 @@ import { starterRoutes } from '@layer0/starter'
 import { CACHE_ASSETS } from './cache'
 import routeHandler from './route-handler'
 
+const serveStaticCSSPage = ({
+  cache,
+  serveStatic,
+  setResponseHeader,
+  removeUpstreamResponseHeader,
+  cssFilePath,
+}) => {
+  setResponseHeader('cache-control', 'public, max-age=86400')
+  removeUpstreamResponseHeader('set-cookie')
+  cache(CACHE_ASSETS)
+  serveStatic(cssFilePath)
+}
+
 export default new Router()
   .use(starterRoutes)
 
@@ -16,15 +29,18 @@ export default new Router()
     cache(CACHE_ASSETS)
     return proxy('origin')
   })
-  .match(
-    '/(.*)/global.css',
-    ({ cache, serveStatic, setResponseHeader, removeUpstreamResponseHeader }) => {
-      setResponseHeader('cache-control', 'public, max-age=86400')
-      removeUpstreamResponseHeader('set-cookie')
-      cache(CACHE_ASSETS)
-      serveStatic('global.css')
-    }
-  )
+  .match('/(.*)/global.css', (props) => {
+    serveStaticCSSPage({ ...props, cssFilePath: 'split/global.css' })
+  })
+  .match('/(.*)/homePage.css', (props) => {
+    serveStaticCSSPage({ ...props, cssFilePath: 'split/homePage.css' })
+  })
+  .match('/(.*)/loyalty-header.css', (props) => {
+    serveStaticCSSPage({ ...props, cssFilePath: 'split/loyalty-header.css' })
+  })
+  .match('/(.*)/main.css', (props) => {
+    serveStaticCSSPage({ ...props, cssFilePath: 'split/main.css' })
+  })
 
   .match('/on/demandware.static/:path*', ({ cache, proxy }) => {
     cache(CACHE_ASSETS)
