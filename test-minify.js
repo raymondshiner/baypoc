@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 
+//This Code was written by Brandon Anderson
+
 const readFileSync = require('fs').readFileSync
 const createWriteStream = require('fs').createWriteStream
 const basename = require('path').basename
 
 // let file = "Coverage-20220429T224450.json"
 // let file = "css_coverage.json"
-const file = 'per_block.json'
+const file = './rawExports/global-css.json'
 const json = JSON.parse(readFileSync(file))
 
 json.forEach((item) => {
