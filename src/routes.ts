@@ -3,23 +3,23 @@ import { starterRoutes } from '@layer0/starter'
 import { CACHE_ASSETS } from './cache'
 import routeHandler from './route-handler'
 
-const serveStaticCSSPage = ({
+const serveStaticPage = ({
   cache,
   serveStatic,
   setResponseHeader,
   removeUpstreamResponseHeader,
-  cssFilePath,
+  filePath,
 }) => {
   setResponseHeader('cache-control', 'public, max-age=86400')
   removeUpstreamResponseHeader('set-cookie')
   cache(CACHE_ASSETS)
-  serveStatic(cssFilePath)
+  serveStatic(filePath)
 }
 
 export default new Router()
   .use(starterRoutes)
 
-  // example routes for cacheable pages:
+  // main cacheable pages:
   .get('/', routeHandler)
   .get('/editorial/:path*', routeHandler)
   .get('/c/:path*', routeHandler)
@@ -29,19 +29,27 @@ export default new Router()
     cache(CACHE_ASSETS)
     return proxy('origin')
   })
+
+  //serving static minified css improvments
   .match('/(.*)/global.css', (props) => {
-    serveStaticCSSPage({ ...props, cssFilePath: 'split/global.css' })
+    serveStaticPage({ ...props, filePath: 'split/global.css' })
   })
   .match('/(.*)/homePage.css', (props) => {
-    serveStaticCSSPage({ ...props, cssFilePath: 'split/homePage.css' })
+    serveStaticPage({ ...props, filePath: 'split/homePage.css' })
   })
   .match('/(.*)/loyalty-header.css', (props) => {
-    serveStaticCSSPage({ ...props, cssFilePath: 'split/loyalty-header.css' })
+    serveStaticPage({ ...props, filePath: 'split/loyalty-header.css' })
   })
   .match('/(.*)/main.css', (props) => {
-    serveStaticCSSPage({ ...props, cssFilePath: 'split/main.css' })
+    serveStaticPage({ ...props, filePath: 'split/main.css' })
   })
 
+  //serving static svgs
+  .match('/(.*)/hbc-hamburger-20.svg', (props) => {
+    serveStaticPage({ ...props, filePath: 'static/hbc-hamburger-20.svg' })
+  })
+
+  //caching static assets
   .match('/on/demandware.static/:path*', ({ cache, proxy }) => {
     cache(CACHE_ASSETS)
     return proxy('origin')
