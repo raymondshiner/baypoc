@@ -64,10 +64,12 @@ export default new Router()
     cache(CACHE_ASSETS)
     serviceWorker('dist/service-worker.js')
   })
-  .match('/main.js', ({ serveStatic, cache }) => {
-    cache(CACHE_ASSETS)
-    return serveStatic('dist/browser.js')
-  })
+
+  // commenting this out because this causes problems with service worker
+  // .match('/main.js', ({ serveStatic, cache }) => {
+  //   cache(CACHE_ASSETS)
+  //   return serveStatic('dist/browser.js')
+  // })
 
   // fallback route for all other requests:
   .fallback(({ proxy }) => {
