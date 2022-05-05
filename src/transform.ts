@@ -50,15 +50,32 @@ export default function transform(response: Response, request: Request) {
 
     // Lazy load all images and run through moovweb optimizer //
     $('img').each((i, el) => {
-      $(el)
-        .attr('loading', 'lazy')
-        .attr('fetchpriority', 'low')
-        .attr('src', `https://opt.moovweb.net?img=${el.attribs.src}`)
+      const imageIsHomeLCP =
+        el.attribs.src ===
+        'https://opt.moovweb.net?img=https://image.s5a.com/is/image/TheBay/214_050422_HOMEPAGE_HERO-SLIDE_1_DESKTOPcc_EN?scl=1&amp;qlt=75&amp;fmt=webp'
+
+      if (imageIsHomeLCP) {
+        $(el).attr('src', `https://opt.moovweb.net?img=${el.attribs.src}`)
+      } else {
+        $(el)
+          .attr('loading', 'lazy')
+          .attr('fetchpriority', 'low')
+          .attr('src', `https://opt.moovweb.net?img=${el.attribs.src}`)
+      }
     })
 
     // uncomment this line to enable replacePersonalizedData
     // replacePersonalizedData($)
 
     response.body = $.html()
+      // .replace(/\{ display\: none\; \}/g, '{}')
+      // .replace(/\opacity\: 0\;/g, '')
+      // .replace(/\visibility\: hidden;/g, '')
+      .replace(/\=\"\/\//g, '="https://')
+      .replace(/(https?)?:?(\/\/)?www\.thebay\.com\//g, '/')
+    // .replace(/(https?)?:?(\/\/)?image\.s5a\.com\//g, '/l0-images/')
+    // .replace(/(https?)?:?(\/\/)?image\.s5a\.com/g, '/l0-images')
+    // .replace(/https?:\/\/images\.footballfanatics\.com/g, '/l0-image')
+    // .replace(/\?layer0\_dt\_pf\=1/g, '')
   }
 }

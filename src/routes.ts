@@ -3,19 +3,6 @@ import { starterRoutes } from '@layer0/starter'
 import { CACHE_ASSETS } from './cache'
 import routeHandler from './route-handler'
 
-const serveStaticPage = ({
-  cache,
-  serveStatic,
-  setResponseHeader,
-  removeUpstreamResponseHeader,
-  filePath,
-}) => {
-  setResponseHeader('cache-control', 'public, max-age=86400')
-  removeUpstreamResponseHeader('set-cookie')
-  cache(CACHE_ASSETS)
-  serveStatic(filePath)
-}
-
 export default new Router()
   .use(starterRoutes)
 
@@ -30,24 +17,64 @@ export default new Router()
     return proxy('origin')
   })
 
-  //serving static minified css improvments
-  .match('/(.*)/global.css', (props) => {
-    serveStaticPage({ ...props, filePath: 'split/global.css' })
-  })
-  .match('/(.*)/homePage.css', (props) => {
-    serveStaticPage({ ...props, filePath: 'split/homePage.css' })
-  })
-  .match('/(.*)/loyalty-header.css', (props) => {
-    serveStaticPage({ ...props, filePath: 'split/loyalty-header.css' })
-  })
-  .match('/(.*)/main.css', (props) => {
-    serveStaticPage({ ...props, filePath: 'split/main.css' })
-  })
+  // serving static minified css improvments
+  .match(
+    '/(.*)/global.css',
+    ({ setResponseHeader, removeUpstreamResponseHeader, cache, serveStatic }) => {
+      setResponseHeader('cache-control', 'public, max-age=86400')
+      removeUpstreamResponseHeader('set-cookie')
+      cache(CACHE_ASSETS)
+      serveStatic('splitDesktop/global.css')
+    }
+  )
+  .match(
+    '/(.*)/homePage.css',
+    ({ setResponseHeader, removeUpstreamResponseHeader, cache, serveStatic }) => {
+      setResponseHeader('cache-control', 'public, max-age=86400')
+      removeUpstreamResponseHeader('set-cookie')
+      cache(CACHE_ASSETS)
+      serveStatic('splitDesktop/homePage.css')
+    }
+  )
+  .match(
+    '/(.*)/loyalty-header.css',
+    ({ setResponseHeader, removeUpstreamResponseHeader, cache, serveStatic }) => {
+      setResponseHeader('cache-control', 'public, max-age=86400')
+      removeUpstreamResponseHeader('set-cookie')
+      cache(CACHE_ASSETS)
+      serveStatic('splitDesktop/loyalty-header.css')
+    }
+  )
+  .match(
+    '/(.*)/main.css',
+    ({ setResponseHeader, removeUpstreamResponseHeader, cache, serveStatic }) => {
+      setResponseHeader('cache-control', 'public, max-age=86400')
+      removeUpstreamResponseHeader('set-cookie')
+      cache(CACHE_ASSETS)
+      serveStatic('splitDesktop/main.css')
+    }
+  )
 
-  //serving static svgs
-  .match('/(.*)/hbc-hamburger-20.svg', (props) => {
-    serveStaticPage({ ...props, filePath: 'static/hbc-hamburger-20.svg' })
-  })
+  .match(
+    '/(.*)/fs.js',
+    ({ setResponseHeader, removeUpstreamResponseHeader, cache, serveStatic }) => {
+      setResponseHeader('cache-control', 'public, max-age=86400')
+      removeUpstreamResponseHeader('set-cookie')
+      cache(CACHE_ASSETS)
+      serveStatic('splitDesktop/fs.js')
+    }
+  )
+
+  // serving static svgs
+  .match(
+    '/(.*)/hbc-hamburger-20.svg',
+    ({ setResponseHeader, removeUpstreamResponseHeader, cache, serveStatic }) => {
+      setResponseHeader('cache-control', 'public, max-age=86400')
+      removeUpstreamResponseHeader('set-cookie')
+      cache(CACHE_ASSETS)
+      serveStatic('static/hbc-hamburger-20.svg')
+    }
+  )
 
   //caching static assets
   .match('/on/demandware.static/:path*', ({ cache, proxy }) => {
@@ -64,12 +91,10 @@ export default new Router()
     cache(CACHE_ASSETS)
     serviceWorker('dist/service-worker.js')
   })
-
-  // commenting this out because this causes problems with service worker
-  // .match('/main.js', ({ serveStatic, cache }) => {
-  //   cache(CACHE_ASSETS)
-  //   return serveStatic('dist/browser.js')
-  // })
+  .match('/main.js', ({ serveStatic, cache }) => {
+    cache(CACHE_ASSETS)
+    return serveStatic('dist/browser.js')
+  })
 
   // fallback route for all other requests:
   .fallback(({ proxy }) => {
