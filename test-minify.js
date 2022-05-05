@@ -8,7 +8,7 @@ const basename = require('path').basename
 
 // let file = "Coverage-20220429T224450.json"
 // let file = "css_coverage.json"
-const file = './rawExports/global-css-desktop.json'
+const file = './rawExports/global-css-mobile.json'
 const json = JSON.parse(readFileSync(file))
 
 json.forEach((item) => {
@@ -16,7 +16,7 @@ json.forEach((item) => {
   filename = filename === '' ? 'index.html' : filename
 
   if (filename && item.ranges.length) {
-    const stream = createWriteStream(`./splitDesktop/${filename}`)
+    const stream = createWriteStream(`./splitMobile/${filename}`)
 
     console.log('>> Optimizing: %s with %d changes', filename, item.ranges.length)
 
